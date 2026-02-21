@@ -1,0 +1,221 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Provenance — de Prenda Collection</title>
+<link rel="stylesheet" href="style.css">
+<style>
+  .prov-intro { padding: 100px 80px; display: grid; grid-template-columns: 1fr 1fr; gap: 80px; align-items: start; }
+  .prov-intro-text p { font-size: 14px; line-height: 1.95; color: var(--grey); margin-bottom: 18px; }
+  .prov-intro-aside {
+    padding: 48px; background: var(--black); color: var(--ivory);
+    position: sticky; top: 100px;
+  }
+  .aside-title { font-size: 10px; letter-spacing: 0.25em; text-transform: uppercase; color: var(--gold); margin-bottom: 20px; }
+  .aside-list { list-style: none; }
+  .aside-list li {
+    padding: 16px 0; border-bottom: 1px solid rgba(255,255,255,0.08);
+    font-size: 13px; line-height: 1.6; color: rgba(245,240,232,0.6);
+    display: flex; gap: 14px; align-items: flex-start;
+  }
+  .aside-list li::before { content: '✓'; color: var(--gold); flex-shrink: 0; margin-top: 1px; }
+  .aside-list li:last-child { border-bottom: none; }
+
+  .prov-pillars { background: var(--black); padding: 100px 80px; }
+  .prov-pillars .section-eyebrow { color: var(--gold); }
+  .prov-pillars .section-title { color: var(--ivory); }
+  .prov-pillars .divider { background: var(--gold); }
+  .pillars-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 2px; margin-top: 56px; }
+  .pillar {
+    background: rgba(255,255,255,0.04); padding: 52px 40px;
+    border: 1px solid rgba(255,255,255,0.06);
+  }
+  .pillar-roman {
+    font-family: 'Cormorant Garamond', serif; font-size: 72px; font-weight: 300;
+    color: var(--gold); line-height: 1; margin-bottom: 24px;
+  }
+  .pillar-title { font-size: 12px; letter-spacing: 0.18em; text-transform: uppercase; color: rgba(245,240,232,0.8); margin-bottom: 14px; }
+  .pillar-text { font-size: 13px; line-height: 1.85; color: rgba(245,240,232,0.5); }
+
+  .prov-faq { padding: 100px 80px; background: var(--grey-light); }
+  .faq-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 2px; margin-top: 56px; }
+  .faq-item { background: var(--ivory); padding: 40px 36px; cursor: pointer; }
+  .faq-q {
+    font-size: 14px; font-weight: 500; line-height: 1.4;
+    margin-bottom: 0; display: flex; justify-content: space-between; align-items: flex-start; gap: 16px;
+    font-family: 'Cormorant Garamond', serif; font-size: 20px;
+  }
+  .faq-toggle { font-size: 22px; color: var(--red); flex-shrink: 0; transition: transform 0.3s; }
+  .faq-a {
+    font-size: 13px; line-height: 1.8; color: var(--grey); margin-top: 16px;
+    display: none;
+  }
+  .faq-item.open .faq-toggle { transform: rotate(45deg); }
+  .faq-item.open .faq-a { display: block; }
+
+  .prov-cert { padding: 100px 80px; background: var(--ivory); text-align: center; }
+  .cert-box {
+    max-width: 680px; margin: 56px auto 0;
+    border: 1px solid var(--grey-light); padding: 64px;
+    position: relative;
+  }
+  .cert-box::before, .cert-box::after {
+    content: ''; position: absolute;
+    width: 40px; height: 40px;
+    border-color: var(--red);
+    border-style: solid;
+  }
+  .cert-box::before { top: -1px; left: -1px; border-width: 2px 0 0 2px; }
+  .cert-box::after { bottom: -1px; right: -1px; border-width: 0 2px 2px 0; }
+  .cert-title { font-size: 10px; letter-spacing: 0.3em; text-transform: uppercase; color: var(--red); margin-bottom: 20px; }
+  .cert-heading { font-family: 'Cormorant Garamond', serif; font-size: 32px; font-weight: 300; margin-bottom: 20px; line-height: 1.3; }
+  .cert-text { font-size: 13px; line-height: 1.85; color: var(--grey); margin-bottom: 32px; }
+
+  @media (max-width: 900px) {
+    .prov-intro { grid-template-columns: 1fr; padding: 60px 24px; gap: 40px; }
+    .prov-intro-aside { position: static; }
+    .pillars-grid { grid-template-columns: 1fr; }
+    .prov-pillars { padding: 60px 24px; }
+    .faq-grid { grid-template-columns: 1fr; }
+    .prov-faq, .prov-cert { padding: 60px 24px; }
+    .cert-box { padding: 36px 24px; }
+  }
+</style>
+</head>
+<body>
+
+<nav>
+  <a class="nav-logo" href="index.html">The <span>de Prenda</span> Collection</a>
+  <ul class="nav-links">
+    <li><a href="index.html">Home</a></li>
+    <li><a href="collection.html">Collection</a></li>
+    <li><a href="story.html">Our Story</a></li>
+    <li><a href="chateau.html">The Château</a></li>
+    <li><a href="provenance.html" class="active">Provenance</a></li>
+    <li><a href="contact.html" class="nav-cta">Enquire</a></li>
+  </ul>
+</nav>
+
+<div class="page-header">
+  <div class="page-header-inner">
+    <div class="page-header-eyebrow">Trust &amp; Authenticity</div>
+    <h1>Provenance &amp;<br><em>Authentication</em></h1>
+    <p class="page-header-sub">Buying a rare object requires trust. Here is exactly how we establish it — and what we provide with every piece.</p>
+  </div>
+</div>
+
+<!-- INTRO -->
+<div class="prov-intro">
+  <div class="prov-intro-text fade-up">
+    <div class="section-eyebrow">Why It Matters</div>
+    <h2 class="section-title">The Value<br>of <em>Knowing</em></h2>
+    <div class="divider"></div>
+    <p>Rimowa has become a genuinely collectible brand. Limited edition pieces, airline collaborations, and rare colorways command significant premiums on the secondary market — and that means the secondary market also has fakes, misrepresented pieces, and stories that don't hold up to scrutiny.</p>
+    <p>The de Prenda Collection is in a position that cannot be replicated. These pieces did not come from a reseller, an auction house, or a third-party vendor. They came directly from a former owner of the company itself — held in a family home in Belgium for decades.</p>
+    <p>That is not a claim we ask you to accept on faith. It is something we can document, demonstrate, and show you in person. The burden of proof is on us, and we welcome it.</p>
+  </div>
+  <div class="prov-intro-aside fade-up delay-1">
+    <div class="aside-title">What Every Purchase Includes</div>
+    <ul class="aside-list">
+      <li>Certificate of provenance signed by the de Prenda family</li>
+      <li>Documentation of original acquisition where available</li>
+      <li>Detailed condition report for the specific piece</li>
+      <li>Series identification and historical context notes</li>
+      <li>Photographs of the piece at Château de Prenda</li>
+      <li>Direct contact with the family post-purchase</li>
+      <li>Option of in-person verification before purchase</li>
+    </ul>
+  </div>
+</div>
+
+<!-- PILLARS -->
+<div class="prov-pillars fade-up">
+  <div class="section-eyebrow">The Foundation</div>
+  <h2 class="section-title">Three Pillars<br>of <em>Trust</em></h2>
+  <div class="divider divider-gold"></div>
+  <div class="pillars-grid">
+    <div class="pillar">
+      <div class="pillar-roman">I</div>
+      <div class="pillar-title">Direct Ownership</div>
+      <p class="pillar-text">There is no more direct provenance possible than a former owner's personal collection. These pieces did not pass through auction houses or resellers. They went from the brand to the owner, and from the owner to you. The chain has two links.</p>
+    </div>
+    <div class="pillar">
+      <div class="pillar-roman">II</div>
+      <div class="pillar-title">Physical Verification</div>
+      <p class="pillar-text">We actively encourage in-person viewings at the château before any significant purchase. You may inspect every piece, examine hardware, review documents, and ask every question you have. Nothing is restricted. Nothing is staged.</p>
+    </div>
+    <div class="pillar">
+      <div class="pillar-roman">III</div>
+      <div class="pillar-title">Written Documentation</div>
+      <p class="pillar-text">Every piece is accompanied by a certificate of provenance and, where available, supporting documentation. Our ongoing relationship with each buyer is part of the provenance — we remain reachable long after the sale.</p>
+    </div>
+  </div>
+</div>
+
+<!-- FAQ -->
+<div class="prov-faq">
+  <div class="fade-up" style="text-align:center;">
+    <div class="section-eyebrow" style="text-align:center;">Common Questions</div>
+    <h2 class="section-title" style="text-align:center;">Frequently<br><em>Asked</em></h2>
+    <div class="divider" style="margin:0 auto;"></div>
+  </div>
+  <div class="faq-grid fade-up">
+    <div class="faq-item" onclick="toggleFaq(this)">
+      <div class="faq-q">How do I know these are genuinely from the former owner? <span class="faq-toggle">+</span></div>
+      <div class="faq-a">We provide documentation, we are available for in-person meetings, and we encourage you to visit the château where the collection has been kept. The physical environment and the family's direct involvement are the strongest form of verification available.</div>
+    </div>
+    <div class="faq-item" onclick="toggleFaq(this)">
+      <div class="faq-q">Are these the original, unmodified pieces? <span class="faq-toggle">+</span></div>
+      <div class="faq-a">Yes. Every piece is in its original condition as acquired. We do not restore, refurbish, or modify any piece before sale. Condition is documented honestly and transparently in each listing.</div>
+    </div>
+    <div class="faq-item" onclick="toggleFaq(this)">
+      <div class="faq-q">What documentation comes with each piece? <span class="faq-toggle">+</span></div>
+      <div class="faq-a">Each piece comes with a certificate of provenance, a detailed condition report, and historical series notes. Where original acquisition documentation exists, it is included. We also provide photographs of the piece at the château.</div>
+    </div>
+    <div class="faq-item" onclick="toggleFaq(this)">
+      <div class="faq-q">Can I visit the château before purchasing? <span class="faq-toggle">+</span></div>
+      <div class="faq-a">Absolutely — in fact, we encourage it for high-value pieces. Private viewings are available by appointment and are complimentary. There is no obligation to purchase. Simply contact us to arrange a visit.</div>
+    </div>
+    <div class="faq-item" onclick="toggleFaq(this)">
+      <div class="faq-q">Do you ship internationally? <span class="faq-toggle">+</span></div>
+      <div class="faq-a">Yes. We work with specialist couriers experienced in handling high-value collectibles. Full insurance is arranged for every shipment. We always prefer an in-person viewing first, but we understand that is not always possible.</div>
+    </div>
+    <div class="faq-item" onclick="toggleFaq(this)">
+      <div class="faq-q">Is this an official Rimowa venture? <span class="faq-toggle">+</span></div>
+      <div class="faq-a">No. The de Prenda Collection is a private family sale of pieces from the former owner's personal collection. It has no official affiliation with Rimowa GmbH or LVMH. Rimowa is a registered trademark of its respective owners.</div>
+    </div>
+  </div>
+</div>
+
+<!-- CERT BOX -->
+<div class="prov-cert fade-up">
+  <div class="section-eyebrow">Every Purchase</div>
+  <h2 class="section-title">Certificate of<br><em>Provenance</em></h2>
+  <div class="divider" style="margin:0 auto;"></div>
+  <div class="cert-box">
+    <div class="cert-title">The de Prenda Collection · Belgium</div>
+    <div class="cert-heading">Certificate of Provenance &amp; Authenticity</div>
+    <p class="cert-text">This document certifies that the accompanying piece originates directly from the personal collection of the de Prenda family, former owners of Rimowa, and has been held at Château de Prenda, Belgium. The chain of custody is unbroken from acquisition to the present day.</p>
+    <a href="contact.html" class="btn-primary">Enquire About a Piece</a>
+  </div>
+</div>
+
+<footer>
+  <div class="footer-top">
+    <div>
+      <span class="footer-logo">The <span>de Prenda</span> Collection</span>
+      <p class="footer-tagline">Rare and collectible Rimowa cases from the personal collection of a former company owner, offered from Château de Prenda, Belgium.</p>
+    </div>
+    <div class="footer-col"><div class="footer-col-title">Navigate</div><ul><li><a href="collection.html">The Collection</a></li><li><a href="story.html">Our Story</a></li><li><a href="chateau.html">The Château</a></li><li><a href="provenance.html">Provenance</a></li></ul></div>
+    <div class="footer-col"><div class="footer-col-title">Contact</div><ul><li><a href="contact.html">Enquire</a></li><li><a href="contact.html">Private Viewings</a></li><li><a href="/cdn-cgi/l/email-protection#1e7d7172727b7d6a7771705e7d767f6a7b7f6b7a7b6e6c7b707a7f307c7b">Email Us</a></li></ul></div>
+    <div class="footer-col"><div class="footer-col-title">Location</div><ul><li><a href="#">Château de Prenda</a></li><li><a href="#">Belgium</a></li><li><a href="#">By Appointment Only</a></li></ul></div>
+  </div>
+  <div class="footer-bottom">
+    <div>© 2025 · The de Prenda Collection</div>
+    <div>A family legacy — not an official Rimowa venture</div>
+  </div>
+</footer>
+
+<script data-cfasync="false" src="/cdn-cgi/scripts/5c5dd728/cloudflare-static/email-decode.min.js"></script><script>
+  const obs = new IntersectionObserver(e => e.forEach(x => { if (x.isIntersecting) x.target.classList.add('visible'); }), { threshold: 0.1 
