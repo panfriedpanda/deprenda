@@ -1,0 +1,415 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>The Collection — de Prenda</title>
+<link rel="stylesheet" href="style.css">
+<style>
+  .collection-body { padding: 80px; background: var(--ivory); }
+
+  /* Filter bar */
+  .filter-section {
+    display: flex; justify-content: space-between; align-items: center;
+    padding: 32px 80px; background: #fff;
+    border-bottom: 1px solid var(--grey-light);
+    position: sticky; top: 72px; z-index: 50;
+  }
+  .filter-left { display: flex; gap: 8px; flex-wrap: wrap; }
+  .filter-btn {
+    padding: 9px 22px; font-size: 10px; letter-spacing: 0.18em;
+    text-transform: uppercase; border: 1px solid #ccc; background: none;
+    cursor: pointer; transition: all 0.2s; color: var(--grey);
+    font-family: 'Montserrat', sans-serif;
+  }
+  .filter-btn.active, .filter-btn:hover {
+    border-color: var(--black); background: var(--black); color: var(--ivory);
+  }
+  .sort-select {
+    font-family: 'Montserrat', sans-serif; font-size: 11px;
+    letter-spacing: 0.1em; border: 1px solid #ccc; padding: 9px 16px;
+    background: none; color: var(--grey); cursor: pointer; outline: none;
+  }
+  .results-count {
+    font-size: 11px; color: var(--grey); letter-spacing: 0.08em;
+  }
+
+  /* Grid */
+  .product-grid {
+    display: grid; grid-template-columns: repeat(3, 1fr); gap: 2px;
+    margin-top: 2px;
+  }
+
+  .product-card {
+    background: #fff; cursor: pointer;
+    transition: transform 0.3s; position: relative; overflow: hidden;
+  }
+  .product-card:hover { transform: translateY(-4px); box-shadow: 0 16px 48px rgba(0,0,0,0.1); }
+  .product-img {
+    aspect-ratio: 4/5; overflow: hidden; background: #111; position: relative;
+  }
+  .product-img img {
+    width: 100%; height: 100%; object-fit: cover;
+    transition: transform 0.6s ease;
+  }
+  .product-card:hover .product-img img { transform: scale(1.04); }
+  .product-hover-overlay {
+    position: absolute; inset: 0; background: rgba(10,10,10,0.45);
+    display: flex; align-items: center; justify-content: center;
+    opacity: 0; transition: opacity 0.3s;
+  }
+  .product-card:hover .product-hover-overlay { opacity: 1; }
+  .product-hover-btn {
+    padding: 13px 28px; background: var(--ivory); color: var(--black);
+    font-size: 10px; letter-spacing: 0.2em; text-transform: uppercase;
+    border: none; cursor: pointer; font-family: 'Montserrat', sans-serif;
+    transition: background 0.2s, color 0.2s;
+  }
+  .product-hover-btn:hover { background: var(--red); color: var(--ivory); }
+
+  .product-info { padding: 24px 24px 28px; }
+  .product-series {
+    font-size: 10px; letter-spacing: 0.2em; text-transform: uppercase;
+    color: var(--red); margin-bottom: 8px;
+  }
+  .product-name {
+    font-family: 'Cormorant Garamond', serif; font-size: 22px; font-weight: 400;
+    margin-bottom: 4px; line-height: 1.2;
+  }
+  .product-desc { font-size: 12px; color: var(--grey); margin-bottom: 16px; line-height: 1.6; }
+  .product-footer { display: flex; justify-content: space-between; align-items: center; }
+  .product-price {
+    font-family: 'Cormorant Garamond', serif; font-size: 26px; font-weight: 300;
+  }
+  .product-tag {
+    font-size: 9px; letter-spacing: 0.2em; text-transform: uppercase;
+    padding: 4px 10px; border: 1px solid;
+  }
+  .tag-available { border-color: #2d7a2d; color: #2d7a2d; }
+  .tag-sold { border-color: #999; color: #999; }
+  .tag-rare { border-color: var(--red); color: var(--red); }
+
+  /* Coming soon card */
+  .card-placeholder { background: var(--grey-light); cursor: default; }
+  .card-placeholder:hover { transform: none; box-shadow: none; }
+  .placeholder-inner {
+    aspect-ratio: 4/5; display: flex; flex-direction: column;
+    align-items: center; justify-content: center;
+    background: #e0dcd4; color: #aaa;
+  }
+  .placeholder-inner div:first-child { font-size: 44px; margin-bottom: 14px; opacity: 0.35; }
+  .placeholder-inner div:last-child { font-size: 10px; letter-spacing: 0.2em; text-transform: uppercase; }
+
+  /* Detail modal */
+  .detail-modal {
+    display: none; position: fixed; inset: 0; z-index: 200;
+    background: rgba(0,0,0,0.85); overflow-y: auto; padding: 40px 20px;
+    align-items: flex-start; justify-content: center;
+  }
+  .detail-modal.open { display: flex; }
+  .detail-inner {
+    background: var(--ivory); max-width: 1000px; width: 100%;
+    margin: auto; display: grid; grid-template-columns: 1fr 1fr;
+    position: relative;
+  }
+  .detail-gallery { background: #111; }
+  .detail-main-img { width: 100%; aspect-ratio: 1; object-fit: cover; display: block; }
+  .detail-thumbs { display: flex; gap: 4px; padding: 8px; background: #111; }
+  .detail-thumb {
+    width: 68px; height: 68px; object-fit: cover; cursor: pointer;
+    border: 2px solid transparent; opacity: 0.55; transition: all 0.2s; flex-shrink: 0;
+  }
+  .detail-thumb.active, .detail-thumb:hover { border-color: var(--red); opacity: 1; }
+  .detail-info { padding: 48px 44px; overflow-y: auto; max-height: 80vh; }
+  .detail-close {
+    position: absolute; top: 16px; right: 20px;
+    font-size: 28px; cursor: pointer; color: var(--grey);
+    background: none; border: none; line-height: 1; z-index: 10;
+  }
+  .detail-close:hover { color: var(--black); }
+  .detail-series { font-size: 10px; letter-spacing: 0.25em; text-transform: uppercase; color: var(--red); margin-bottom: 12px; }
+  .detail-name { font-family: 'Cormorant Garamond', serif; font-size: 36px; font-weight: 300; line-height: 1.1; margin-bottom: 8px; }
+  .detail-era { font-size: 12px; color: var(--grey); margin-bottom: 24px; }
+  .detail-divider { width: 40px; height: 1px; background: var(--red); margin-bottom: 24px; }
+  .detail-desc { font-size: 13px; line-height: 1.85; color: var(--grey); margin-bottom: 32px; }
+  .spec-table { border-top: 1px solid var(--grey-light); margin-bottom: 32px; }
+  .spec-row { display: flex; justify-content: space-between; padding: 13px 0; border-bottom: 1px solid var(--grey-light); font-size: 12px; gap: 16px; }
+  .spec-key { color: var(--grey); letter-spacing: 0.08em; text-transform: uppercase; font-size: 10px; flex-shrink: 0; }
+  .spec-val { text-align: right; color: var(--black); }
+  .detail-price { font-family: 'Cormorant Garamond', serif; font-size: 44px; font-weight: 300; margin-bottom: 6px; }
+  .detail-price-note { font-size: 11px; color: var(--grey); margin-bottom: 28px; letter-spacing: 0.04em; }
+
+  @media (max-width: 900px) {
+    .filter-section { padding: 20px 24px; flex-direction: column; gap: 12px; align-items: flex-start; }
+    .collection-body { padding: 40px 24px; }
+    .product-grid { grid-template-columns: 1fr 1fr; }
+    .detail-inner { grid-template-columns: 1fr; }
+    .detail-info { max-height: none; }
+  }
+</style>
+</head>
+<body>
+
+<nav>
+  <a class="nav-logo" href="index.html">The <span>de Prenda</span> Collection</a>
+  <ul class="nav-links">
+    <li><a href="index.html">Home</a></li>
+    <li><a href="collection.html" class="active">Collection</a></li>
+    <li><a href="story.html">Our Story</a></li>
+    <li><a href="chateau.html">The Château</a></li>
+    <li><a href="provenance.html">Provenance</a></li>
+    <li><a href="contact.html" class="nav-cta">Enquire</a></li>
+  </ul>
+</nav>
+
+<!-- PAGE HEADER -->
+<div class="page-header">
+  <div class="page-header-inner">
+    <div class="page-header-eyebrow">The de Prenda Collection</div>
+    <h1>The <em>Collection</em></h1>
+    <p class="page-header-sub">Each piece has been personally preserved by the former owner. What you see here is not a curated shop — it is a life's archive, now offered to those who understand its worth.</p>
+  </div>
+</div>
+
+<!-- FILTER BAR -->
+<div class="filter-section">
+  <div class="filter-left">
+    <button class="filter-btn active" onclick="filterGrid('all', this)">All Pieces</button>
+    <button class="filter-btn" onclick="filterGrid('limbo', this)">Limbo</button>
+    <button class="filter-btn" onclick="filterGrid('salsa', this)">Salsa</button>
+    <button class="filter-btn" onclick="filterGrid('topas', this)">Topas</button>
+    <button class="filter-btn" onclick="filterGrid('special', this)">Special Editions</button>
+  </div>
+  <div style="display:flex; gap:16px; align-items:center;">
+    <span class="results-count" id="resultsCount">Showing all pieces</span>
+    <select class="sort-select">
+      <option>Sort: Featured</option>
+      <option>Price: Low to High</option>
+      <option>Price: High to Low</option>
+    </select>
+  </div>
+</div>
+
+<!-- PRODUCT GRID -->
+<div style="background:var(--grey-light); padding: 2px;">
+<div class="product-grid" id="productGrid">
+
+  <!-- PIECE 001 — Black & Red Limbo -->
+  <div class="product-card fade-up" data-category="limbo" onclick="openDetail('001')">
+    <div class="product-img">
+      <img src="images/img_6373.jpeg" alt="Rimowa Limbo Black Red Edition">
+      <div class="product-hover-overlay">
+        <button class="product-hover-btn">View Details</button>
+      </div>
+    </div>
+    <div class="product-info">
+      <div class="product-series">Limbo Series · No. 001</div>
+      <div class="product-name">Black &amp; Red Limited</div>
+      <div class="product-desc">Matte black polycarbonate with cardinal red accents throughout. TSA lock, Multiwheel®, gold badge.</div>
+      <div class="product-footer">
+        <div class="product-price">€ 1,850</div>
+        <div class="product-tag tag-rare">Rare</div>
+      </div>
+    </div>
+  </div>
+
+  <!-- PLACEHOLDER CARDS -->
+  <div class="product-card card-placeholder fade-up delay-1" data-category="salsa">
+    <div class="placeholder-inner">
+      <div>🧳</div><div>Coming Soon</div>
+    </div>
+    <div class="product-info">
+      <div class="product-series">Salsa Series</div>
+      <div class="product-name">Upcoming Piece</div>
+      <div class="product-desc">Details to be confirmed once photographed.</div>
+      <div class="product-footer">
+        <div class="product-price">—</div>
+        <div class="product-tag tag-available">Available</div>
+      </div>
+    </div>
+  </div>
+
+  <div class="product-card card-placeholder fade-up delay-2" data-category="topas">
+    <div class="placeholder-inner">
+      <div>🧳</div><div>Coming Soon</div>
+    </div>
+    <div class="product-info">
+      <div class="product-series">Topas Series</div>
+      <div class="product-name">Upcoming Piece</div>
+      <div class="product-desc">Details to be confirmed once photographed.</div>
+      <div class="product-footer">
+        <div class="product-price">—</div>
+        <div class="product-tag tag-available">Available</div>
+      </div>
+    </div>
+  </div>
+
+  <div class="product-card card-placeholder fade-up" data-category="special">
+    <div class="placeholder-inner">
+      <div>🧳</div><div>Coming Soon</div>
+    </div>
+    <div class="product-info">
+      <div class="product-series">Special Edition</div>
+      <div class="product-name">Upcoming Piece</div>
+      <div class="product-desc">Details to be confirmed once photographed.</div>
+      <div class="product-footer">
+        <div class="product-price">—</div>
+        <div class="product-tag tag-rare">Rare</div>
+      </div>
+    </div>
+  </div>
+
+  <div class="product-card card-placeholder fade-up delay-1" data-category="limbo">
+    <div class="placeholder-inner">
+      <div>🧳</div><div>Coming Soon</div>
+    </div>
+    <div class="product-info">
+      <div class="product-series">Limbo Series</div>
+      <div class="product-name">Upcoming Piece</div>
+      <div class="product-desc">Details to be confirmed once photographed.</div>
+      <div class="product-footer">
+        <div class="product-price">—</div>
+        <div class="product-tag tag-available">Available</div>
+      </div>
+    </div>
+  </div>
+
+  <div class="product-card card-placeholder fade-up delay-2" data-category="salsa">
+    <div class="placeholder-inner">
+      <div>🧳</div><div>Coming Soon</div>
+    </div>
+    <div class="product-info">
+      <div class="product-series">Salsa Series</div>
+      <div class="product-name">Upcoming Piece</div>
+      <div class="product-desc">Details to be confirmed once photographed.</div>
+      <div class="product-footer">
+        <div class="product-price">—</div>
+        <div class="product-tag tag-available">Available</div>
+      </div>
+    </div>
+  </div>
+
+</div>
+</div>
+
+<!-- CTA BAND -->
+<div style="background:var(--black); padding:80px; text-align:center;">
+  <div style="font-size:10px;letter-spacing:0.3em;text-transform:uppercase;color:var(--gold);margin-bottom:20px;">Private Viewings</div>
+  <div style="font-family:'Cormorant Garamond',serif;font-size:clamp(28px,3vw,44px);color:var(--ivory);font-weight:300;margin-bottom:16px;">Cannot find what you are looking for?</div>
+  <p style="font-size:13px;color:rgba(245,240,232,0.5);max-width:480px;margin:0 auto 40px;line-height:1.8;">The full collection of 100+ pieces is held at Château de Prenda. Arrange a private visit to explore what has not yet been photographed or listed.</p>
+  <a href="contact.html" class="btn-ghost">Arrange a Private Viewing</a>
+</div>
+
+<!-- FOOTER -->
+<footer>
+  <div class="footer-top">
+    <div>
+      <span class="footer-logo">The <span>de Prenda</span> Collection</span>
+      <p class="footer-tagline">Rare and collectible Rimowa cases from the personal collection of a former company owner, offered from Château de Prenda, Belgium.</p>
+    </div>
+    <div class="footer-col">
+      <div class="footer-col-title">Navigate</div>
+      <ul>
+        <li><a href="collection.html">The Collection</a></li>
+        <li><a href="story.html">Our Story</a></li>
+        <li><a href="chateau.html">The Château</a></li>
+        <li><a href="provenance.html">Provenance</a></li>
+      </ul>
+    </div>
+    <div class="footer-col">
+      <div class="footer-col-title">Contact</div>
+      <ul>
+        <li><a href="contact.html">Enquire</a></li>
+        <li><a href="contact.html">Private Viewings</a></li>
+        <li><a href="/cdn-cgi/l/email-protection#3a595556565f594e5355547a59525b4e5f5b4f5e5f4a485f545e5b14585f">Email Us</a></li>
+      </ul>
+    </div>
+    <div class="footer-col">
+      <div class="footer-col-title">Location</div>
+      <ul>
+        <li><a href="#">Château de Prenda</a></li>
+        <li><a href="#">Belgium</a></li>
+        <li><a href="#">By Appointment Only</a></li>
+      </ul>
+    </div>
+  </div>
+  <div class="footer-bottom">
+    <div>© 2025 · The de Prenda Collection</div>
+    <div>A family legacy — not an official Rimowa venture</div>
+  </div>
+</footer>
+
+<!-- DETAIL MODAL for Piece 001 -->
+<div class="detail-modal" id="modal-001" onclick="closeModal(event, '001')">
+  <div class="detail-inner">
+    <div class="detail-gallery">
+      <img class="detail-main-img" id="main-001" src="images/img_6373.jpeg" alt="">
+      <div class="detail-thumbs">
+        <img class="detail-thumb active" src="images/img_6373.jpeg" onclick="swapMain('001', this)">
+        <img class="detail-thumb" src="images/img_6380.jpeg" onclick="swapMain('001', this)">
+        <img class="detail-thumb" src="images/img_6385.jpeg" onclick="swapMain('001', this)">
+        <img class="detail-thumb" src="images/img_6389.jpeg" onclick="swapMain('001', this)">
+        <img class="detail-thumb" src="images/img_6394.jpeg" onclick="swapMain('001', this)">
+        <img class="detail-thumb" src="images/img_6403.jpeg" onclick="swapMain('001', this)">
+        <img class="detail-thumb" src="images/img_6414.jpeg" onclick="swapMain('001', this)">
+        <img class="detail-thumb" src="images/img_6424.jpeg" onclick="swapMain('001', this)">
+      </div>
+    </div>
+    <div class="detail-info">
+      <button class="detail-close" onclick="closeModalDirect('001')">×</button>
+      <div class="detail-series">Limbo Series · Piece No. 001</div>
+      <div class="detail-name">Black &amp; Red Limited Edition</div>
+      <div class="detail-era">Two-tone Polycarbonate · 4-wheel Multiwheel®</div>
+      <div class="detail-divider"></div>
+      <p class="detail-desc">A striking two-tone composition in matte black polycarbonate with deep cardinal red accents — handle, frame, wheel housings, corner guards, and zipper all in matching crimson. The gold Rimowa badge and matching red leather luggage tag elevate this piece beyond mere luggage. In exceptional, near-mint condition directly from the former owner's personal collection.</p>
+      <div class="spec-table">
+        <div class="spec-row"><span class="spec-key">Series</span><span class="spec-val">Rimowa Limbo</span></div>
+        <div class="spec-row"><span class="spec-key">Colorway</span><span class="spec-val">Matte Black / Cardinal Red</span></div>
+        <div class="spec-row"><span class="spec-key">Wheels</span><span class="spec-val">4-wheel Multiwheel®</span></div>
+        <div class="spec-row"><span class="spec-key">Lock</span><span class="spec-val">TSA-approved Combination Lock</span></div>
+        <div class="spec-row"><span class="spec-key">Interior</span><span class="spec-val">Grey lining, cross-straps, mesh divider</span></div>
+        <div class="spec-row"><span class="spec-key">Condition</span><span class="spec-val">Near Mint</span></div>
+        <div class="spec-row"><span class="spec-key">Provenance</span><span class="spec-val">Former owner's personal collection, Château de Prenda</span></div>
+      </div>
+      <div class="detail-price">€ 1,850</div>
+      <div class="detail-price-note">Private viewings at Château de Prenda · Shipping available</div>
+      <a href="contact.html?piece=001" class="btn-primary" style="display:block;text-align:center;">Enquire About This Piece</a>
+    </div>
+  </div>
+</div>
+
+<script data-cfasync="false" src="/cdn-cgi/scripts/5c5dd728/cloudflare-static/email-decode.min.js"></script><script>
+  const observer = new IntersectionObserver((e) => e.forEach(x => { if (x.isIntersecting) x.target.classList.add('visible'); }), { threshold: 0.1 });
+  document.querySelectorAll('.fade-up').forEach(el => observer.observe(el));
+
+  function filterGrid(cat, btn) {
+    document.querySelectorAll('.filter-btn').forEach(b => b.classList.remove('active'));
+    btn.classList.add('active');
+    const cards = document.querySelectorAll('.product-card');
+    let count = 0;
+    cards.forEach(card => {
+      const show = cat === 'all' || card.dataset.category === cat;
+      card.style.display = show ? '' : 'none';
+      if (show) count++;
+    });
+    document.getElementById('resultsCount').textContent = cat === 'all' ? 'Showing all pieces' : `${count} piece${count !== 1 ? 's' : ''}`;
+  }
+
+  function openDetail(id) {
+    document.getElementById('modal-' + id).classList.add('open');
+    document.body.style.overflow = 'hidden';
+  }
+  function closeModal(e, id) {
+    if (e.target === document.getElementById('modal-' + id)) closeModalDirect(id);
+  }
+  function closeModalDirect(id) {
+    document.getElementById('modal-' + id).classList.remove('open');
+    document.body.style.overflow = '';
+  }
+  function swapMain(id, thumb) {
+    document.getElementById('main-' + id).src = thumb.src;
+    document.querySelectorAll('#modal-' + id + ' .detail-thumb').forEach(t => t.classList.remove('active'));
+    thumb.classList.add('active');
+  }
+  document.addEventListener('keydown', e => {
+    if (e.key === 'Escape') do
