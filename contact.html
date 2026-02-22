@@ -227,7 +227,7 @@ footer {
   
 
 .fade-up {
-  animation: fadeUp 0.8s ease forwards;
+  animation: fadeUp 0.8s ease both;
 }
 .fade-up.delay-1 { animation-delay: 0.15s; }
 .fade-up.delay-2 { animation-delay: 0.3s; }
@@ -469,10 +469,7 @@ footer {
   </div>
 </footer>
 
-<script data-cfasync="false" src="/cdn-cgi/scripts/5c5dd728/cloudflare-static/email-decode.min.js"></script><script>
-  const obs = new IntersectionObserver(e => e.forEach(x => { if (x.isIntersecting) x.target.classList.add('visible'); }), { threshold: 0.1 });
-  document.querySelectorAll('.fade-up').forEach(el => obs.observe(el));
-
+<script>
   function selectTab(btn, type) {
     document.querySelectorAll('.etab').forEach(b => b.classList.remove('active'));
     btn.classList.add('active');
@@ -494,4 +491,10 @@ footer {
     const btn = e.target.querySelector('.form-submit');
     btn.textContent = 'Sending...';
     setTimeout(() => {
-      btn.sty
+      btn.style.background = 'var(--gold)';
+      btn.textContent = 'Message Sent — We\'ll be in touch shortly.';
+    }, 1200);
+  }
+</script>
+</body>
+</html>
