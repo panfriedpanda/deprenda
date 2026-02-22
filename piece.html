@@ -1,0 +1,836 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Piece — The de Prenda Collection</title>
+<style>
+@import url('https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,300;0,400;0,500;1,300;1,400&family=Montserrat:wght@300;400;500;600&display=swap');
+
+:root {
+  --ivory: #F5F0E8;
+  --black: #0D0D0D;
+  --red: #8B1A1A;
+  --red-light: #A82020;
+  --gold: #C4A84F;
+  --grey: #6B6B6B;
+  --grey-light: #E8E4DC;
+}
+
+* { margin: 0; padding: 0; box-sizing: border-box; }
+html { scroll-behavior: smooth; }
+body {
+  background: var(--ivory);
+  color: var(--black);
+  font-family: 'Montserrat', sans-serif;
+  font-weight: 300;
+  overflow-x: hidden;
+}
+
+/* ── NAV ── */
+nav {
+  position: fixed; top: 0; left: 0; right: 0; z-index: 100;
+  display: flex; align-items: center; justify-content: space-between;
+  padding: 24px 60px;
+  background: rgba(245, 240, 232, 0.95);
+  backdrop-filter: blur(12px);
+  border-bottom: 1px solid rgba(139,26,26,0.12);
+}
+.nav-logo {
+  font-family: 'Cormorant Garamond', serif;
+  font-size: 20px; font-weight: 300; letter-spacing: 0.15em;
+  color: var(--black); text-decoration: none;
+}
+.nav-logo span { color: var(--red); }
+.nav-links { display: flex; gap: 40px; list-style: none; }
+.nav-links a {
+  font-size: 11px; letter-spacing: 0.18em; text-transform: uppercase;
+  color: var(--black); text-decoration: none;
+  position: relative; padding-bottom: 2px;
+  transition: color 0.3s;
+}
+.nav-links a::after {
+  content: ''; position: absolute; bottom: 0; left: 0;
+  width: 0; height: 1px; background: var(--red);
+  transition: width 0.3s;
+}
+.nav-links a:hover { color: var(--red); }
+.nav-links a:hover::after { width: 100%; }
+.nav-links a.active { color: var(--red); }
+.nav-links a.active::after { width: 100%; }
+.nav-cta {
+  padding: 10px 24px;
+  background: var(--black); color: var(--ivory) !important;
+  font-size: 10px !important; letter-spacing: 0.2em !important;
+  transition: background 0.3s !important;
+}
+.nav-cta:hover { background: var(--red) !important; }
+.nav-cta::after { display: none !important; }
+
+/* ── BREADCRUMB ── */
+.breadcrumb {
+  padding: 100px 80px 0;
+  display: flex; align-items: center; gap: 8px;
+}
+.breadcrumb a {
+  font-size: 11px; letter-spacing: 0.15em; text-transform: uppercase;
+  color: var(--grey); text-decoration: none;
+  transition: color 0.2s;
+  display: flex; align-items: center; gap: 8px;
+}
+.breadcrumb a:hover { color: var(--red); }
+.breadcrumb a::before { content: '←'; font-size: 14px; }
+.breadcrumb-sep { font-size: 11px; color: var(--grey-light); }
+.breadcrumb-current { font-size: 11px; letter-spacing: 0.1em; color: var(--black); }
+
+/* ── PIECE LAYOUT ── */
+.piece-wrap {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 0;
+  padding: 48px 80px 80px;
+  max-width: 1400px;
+  margin: 0 auto;
+}
+
+/* ── GALLERY ── */
+.piece-gallery {
+  position: sticky;
+  top: 88px;
+  align-self: start;
+  padding-right: 60px;
+}
+.main-img-wrap {
+  position: relative;
+  overflow: hidden;
+  background: #f0ece4;
+  aspect-ratio: 4/3;
+  margin-bottom: 12px;
+  cursor: zoom-in;
+}
+.main-img-wrap img {
+  width: 100%; height: 100%;
+  object-fit: contain;
+  transition: transform 0.5s ease;
+}
+.main-img-wrap:hover img { transform: scale(1.04); }
+.thumb-row {
+  display: flex;
+  gap: 8px;
+  flex-wrap: wrap;
+}
+.thumb {
+  width: calc(12.5% - 7px);
+  min-width: 60px;
+  aspect-ratio: 1;
+  object-fit: cover;
+  cursor: pointer;
+  border: 2px solid transparent;
+  transition: border-color 0.2s, opacity 0.2s;
+  opacity: 0.55;
+  background: #f0ece4;
+}
+.thumb:hover { opacity: 0.9; }
+.thumb.active { border-color: var(--red); opacity: 1; }
+
+/* ── PIECE INFO ── */
+.piece-info { padding-left: 20px; }
+.piece-series {
+  font-size: 10px; letter-spacing: 0.3em; text-transform: uppercase;
+  color: var(--gold); margin-bottom: 12px;
+}
+.piece-name {
+  font-family: 'Cormorant Garamond', serif;
+  font-size: clamp(32px, 3vw, 52px); font-weight: 300;
+  line-height: 1.1; margin-bottom: 12px;
+}
+.piece-era {
+  font-size: 12px; letter-spacing: 0.08em; color: var(--grey);
+  margin-bottom: 28px;
+}
+.detail-divider {
+  width: 48px; height: 1px;
+  background: var(--red);
+  margin-bottom: 28px;
+}
+.piece-desc {
+  font-size: 14px; line-height: 1.9;
+  color: var(--grey); margin-bottom: 36px;
+  letter-spacing: 0.01em;
+}
+
+/* ── SPEC TABLE ── */
+.spec-table { margin-bottom: 36px; }
+.spec-row {
+  display: flex; justify-content: space-between; align-items: baseline;
+  padding: 10px 0;
+  border-bottom: 1px solid var(--grey-light);
+  gap: 16px;
+}
+.spec-key {
+  font-size: 10px; letter-spacing: 0.15em; text-transform: uppercase;
+  color: var(--grey); flex-shrink: 0;
+}
+.spec-val {
+  font-size: 13px; color: var(--black);
+  text-align: right;
+}
+
+/* ── PRICE & CTA ── */
+.piece-price {
+  font-family: 'Cormorant Garamond', serif;
+  font-size: 44px; font-weight: 300;
+  color: var(--black); margin-bottom: 6px;
+}
+.piece-price-note {
+  font-size: 11px; letter-spacing: 0.05em; color: var(--grey);
+  margin-bottom: 28px;
+}
+.cta-group { display: flex; flex-direction: column; gap: 12px; }
+.btn-primary {
+  display: block; padding: 18px 40px;
+  background: var(--black); color: var(--ivory);
+  font-size: 11px; letter-spacing: 0.2em; text-transform: uppercase;
+  text-decoration: none; border: 1px solid var(--black);
+  text-align: center;
+  transition: background 0.3s, border-color 0.3s;
+}
+.btn-primary:hover { background: var(--red); border-color: var(--red); }
+.btn-secondary {
+  display: block; padding: 16px 40px;
+  background: transparent; color: var(--black);
+  font-size: 11px; letter-spacing: 0.2em; text-transform: uppercase;
+  text-decoration: none; border: 1px solid var(--black);
+  text-align: center;
+  transition: background 0.3s, color 0.3s;
+}
+.btn-secondary:hover { background: var(--black); color: var(--ivory); }
+.provenance-note {
+  margin-top: 28px;
+  padding: 20px;
+  background: #f0ece4;
+  border-left: 3px solid var(--gold);
+}
+.provenance-note-label {
+  font-size: 9px; letter-spacing: 0.25em; text-transform: uppercase;
+  color: var(--gold); margin-bottom: 8px;
+}
+.provenance-note-text {
+  font-size: 12px; line-height: 1.7; color: var(--grey);
+}
+
+/* ── LIGHTBOX ── */
+.lightbox {
+  display: none; position: fixed; inset: 0; z-index: 200;
+  background: rgba(0,0,0,0.96);
+  align-items: center; justify-content: center;
+  padding: 40px;
+}
+.lightbox.open { display: flex; }
+.lightbox img { max-width: 80vw; max-height: 88vh; object-fit: contain; }
+.lightbox-close {
+  position: fixed; top: 24px; right: 32px;
+  color: #fff; font-size: 36px; cursor: pointer;
+  opacity: 0.5; background: none; border: none;
+  transition: opacity 0.2s;
+}
+.lightbox-close:hover { opacity: 1; }
+.lightbox-nav {
+  position: fixed;
+  top: 50%; transform: translateY(-50%);
+  background: none; border: none;
+  color: rgba(255,255,255,0.5);
+  font-size: 48px; cursor: pointer;
+  transition: color 0.2s; padding: 0 20px;
+}
+.lightbox-nav:hover { color: #fff; }
+.lightbox-nav.prev { left: 0; }
+.lightbox-nav.next { right: 0; }
+
+/* ── OTHER PIECES ── */
+.other-section {
+  padding: 80px 80px;
+  border-top: 1px solid var(--grey-light);
+}
+.other-header {
+  display: flex; justify-content: space-between; align-items: flex-end;
+  margin-bottom: 48px;
+}
+.section-eyebrow {
+  font-size: 10px; letter-spacing: 0.3em; text-transform: uppercase;
+  color: var(--red); margin-bottom: 12px;
+}
+.section-title {
+  font-family: 'Cormorant Garamond', serif;
+  font-size: clamp(32px, 3vw, 48px); font-weight: 300;
+  line-height: 1.1;
+}
+.section-title em { font-style: italic; }
+.other-grid {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 2px;
+}
+.other-card {
+  position: relative; overflow: hidden;
+  cursor: pointer; text-decoration: none; display: block;
+}
+.other-card img {
+  width: 100%; aspect-ratio: 3/4; object-fit: cover; display: block;
+  transition: transform 0.5s ease;
+  background: #e8e4dc;
+}
+.other-card:hover img { transform: scale(1.04); }
+.other-overlay {
+  position: absolute; inset: 0;
+  background: linear-gradient(to top, rgba(0,0,0,0.72) 0%, transparent 55%);
+  padding: 20px;
+  display: flex; flex-direction: column; justify-content: flex-end;
+}
+.other-num {
+  font-size: 9px; letter-spacing: 0.25em; text-transform: uppercase;
+  color: var(--gold); margin-bottom: 4px;
+}
+.other-name {
+  font-family: 'Cormorant Garamond', serif;
+  font-size: 20px; color: #fff; font-weight: 300;
+  margin-bottom: 4px; line-height: 1.2;
+}
+.other-price { font-size: 12px; color: rgba(255,255,255,0.6); }
+
+/* ── MARQUEE ── */
+.marquee-bar {
+  background: var(--red); padding: 14px 0; overflow: hidden;
+}
+.marquee-track {
+  display: flex; white-space: nowrap;
+  animation: marquee 22s linear infinite;
+}
+.marquee-track span {
+  font-size: 10px; letter-spacing: 0.25em; text-transform: uppercase;
+  color: rgba(245,240,232,0.85); padding: 0 40px;
+}
+.marquee-track span.dot { color: rgba(245,240,232,0.35); padding: 0; }
+@keyframes marquee {
+  0% { transform: translateX(0); }
+  100% { transform: translateX(-50%); }
+}
+
+/* ── FOOTER ── */
+footer {
+  background: #080808; color: rgba(245,240,232,0.35);
+  padding: 60px 80px 40px;
+}
+.footer-top {
+  display: grid; grid-template-columns: 1.5fr 1fr 1fr 1fr;
+  gap: 60px; padding-bottom: 48px;
+  border-bottom: 1px solid rgba(255,255,255,0.06);
+  margin-bottom: 32px;
+}
+.footer-logo {
+  font-family: 'Cormorant Garamond', serif;
+  font-size: 22px; color: rgba(245,240,232,0.7); font-weight: 300;
+  letter-spacing: 0.12em; margin-bottom: 16px; display: block;
+}
+.footer-logo span { color: var(--red); }
+.footer-tagline {
+  font-size: 12px; line-height: 1.7; color: rgba(245,240,232,0.3);
+  max-width: 240px;
+}
+.footer-col-title {
+  font-size: 10px; letter-spacing: 0.2em; text-transform: uppercase;
+  color: var(--gold); margin-bottom: 20px;
+}
+.footer-col ul { list-style: none; }
+.footer-col ul li { margin-bottom: 10px; }
+.footer-col ul li a {
+  font-size: 12px; color: rgba(245,240,232,0.4); text-decoration: none;
+  letter-spacing: 0.05em; transition: color 0.2s;
+}
+.footer-col ul li a:hover { color: rgba(245,240,232,0.8); }
+.footer-bottom {
+  display: flex; justify-content: space-between; align-items: center;
+  font-size: 10px; letter-spacing: 0.1em;
+}
+
+/* ── TAG ── */
+.piece-tag {
+  display: inline-block;
+  font-size: 9px; letter-spacing: 0.2em; text-transform: uppercase;
+  padding: 4px 10px;
+  margin-bottom: 20px;
+}
+.tag-rare { background: rgba(139,26,26,0.1); color: var(--red); }
+.tag-available { background: rgba(100,150,100,0.1); color: #3a7a3a; }
+
+/* ── MOBILE ── */
+@media (max-width: 1000px) {
+  nav { padding: 18px 24px; }
+  .nav-links { display: none; }
+  .breadcrumb { padding: 88px 24px 0; }
+  .piece-wrap { grid-template-columns: 1fr; padding: 32px 24px 60px; }
+  .piece-gallery { position: static; padding-right: 0; margin-bottom: 40px; }
+  .piece-info { padding-left: 0; }
+  .other-section { padding: 60px 24px; }
+  .other-grid { grid-template-columns: repeat(2, 1fr); }
+  .footer-top { grid-template-columns: 1fr 1fr; gap: 32px; }
+  .footer-bottom { flex-direction: column; gap: 12px; text-align: center; }
+}
+@media (max-width: 600px) {
+  .thumb { width: calc(25% - 6px); }
+  .other-grid { grid-template-columns: repeat(2, 1fr); }
+}
+</style>
+</head>
+<body>
+
+<nav>
+  <a class="nav-logo" href="index.html">The <span>de Prenda</span> Collection</a>
+  <ul class="nav-links">
+    <li><a href="index.html">Home</a></li>
+    <li><a href="collection.html" class="active">Collection</a></li>
+    <li><a href="story.html">Our Story</a></li>
+    <li><a href="chateau.html">The Château</a></li>
+    <li><a href="provenance.html">Provenance</a></li>
+    <li><a href="contact.html" class="nav-cta">Enquire</a></li>
+  </ul>
+</nav>
+
+<div class="breadcrumb">
+  <a href="collection.html">Back to Collection</a>
+  <span class="breadcrumb-sep">/</span>
+  <span class="breadcrumb-current" id="breadcrumbName">Piece</span>
+</div>
+
+<!-- PIECE DETAIL -->
+<div class="piece-wrap">
+  <div class="piece-gallery">
+    <div class="main-img-wrap" id="mainImgWrap" onclick="openLightbox(currentIndex)">
+      <img id="mainImg" src="" alt="">
+    </div>
+    <div class="thumb-row" id="thumbRow"></div>
+  </div>
+  <div class="piece-info">
+    <div class="piece-series" id="pieceSeries"></div>
+    <span class="piece-tag" id="pieceTag"></span>
+    <h1 class="piece-name" id="pieceName"></h1>
+    <div class="piece-era" id="pieceEra"></div>
+    <div class="detail-divider"></div>
+    <p class="piece-desc" id="pieceDesc"></p>
+    <div class="spec-table" id="specTable"></div>
+    <div class="piece-price" id="piecePrice"></div>
+    <div class="piece-price-note">Private viewings at Château de Prenda · Shipping arranged on request</div>
+    <div class="cta-group">
+      <a href="#" id="enquireBtn" class="btn-primary">Enquire About This Piece</a>
+      <a href="contact.html" class="btn-secondary">Arrange a Private Viewing</a>
+    </div>
+    <div class="provenance-note">
+      <div class="provenance-note-label">Certified Provenance</div>
+      <div class="provenance-note-text">Every piece in this collection comes directly from the personal collection of a former Rimowa company owner, held for decades at Château de Prenda, Belgium. Full documentation available upon request.</div>
+    </div>
+  </div>
+</div>
+
+<!-- MARQUEE -->
+<div class="marquee-bar">
+  <div class="marquee-track">
+    <span>Authentic &amp; Certified</span><span class="dot">·</span>
+    <span>Former Owner's Private Collection</span><span class="dot">·</span>
+    <span>Château de Prenda, Belgium</span><span class="dot">·</span>
+    <span>Rare Limited Editions</span><span class="dot">·</span>
+    <span>Private Viewings Available</span><span class="dot">·</span>
+    <span>Authentic &amp; Certified</span><span class="dot">·</span>
+    <span>Former Owner's Private Collection</span><span class="dot">·</span>
+    <span>Château de Prenda, Belgium</span><span class="dot">·</span>
+    <span>Rare Limited Editions</span><span class="dot">·</span>
+    <span>Private Viewings Available</span><span class="dot">·</span>
+  </div>
+</div>
+
+<!-- OTHER PIECES -->
+<div class="other-section">
+  <div class="other-header">
+    <div>
+      <div class="section-eyebrow">From the Collection</div>
+      <h2 class="section-title">Other <em>Pieces</em></h2>
+    </div>
+    <a href="collection.html" style="font-size:11px;letter-spacing:0.15em;text-transform:uppercase;color:var(--black);text-decoration:none;border-bottom:1px solid var(--black);">View All →</a>
+  </div>
+  <div class="other-grid" id="otherGrid"></div>
+</div>
+
+<!-- FOOTER -->
+<footer>
+  <div class="footer-top">
+    <div>
+      <span class="footer-logo">The <span>de Prenda</span> Collection</span>
+      <p class="footer-tagline">Rare and collectible Rimowa cases from the personal collection of a former company owner, offered from Château de Prenda, Belgium.</p>
+    </div>
+    <div class="footer-col">
+      <div class="footer-col-title">Navigate</div>
+      <ul>
+        <li><a href="collection.html">The Collection</a></li>
+        <li><a href="story.html">Our Story</a></li>
+        <li><a href="chateau.html">The Château</a></li>
+        <li><a href="provenance.html">Provenance</a></li>
+      </ul>
+    </div>
+    <div class="footer-col">
+      <div class="footer-col-title">Contact</div>
+      <ul>
+        <li><a href="contact.html">Enquire</a></li>
+        <li><a href="contact.html">Private Viewings</a></li>
+      </ul>
+    </div>
+    <div class="footer-col">
+      <div class="footer-col-title">Location</div>
+      <ul>
+        <li><a href="#">Château de Prenda</a></li>
+        <li><a href="#">Belgium</a></li>
+        <li><a href="#">By Appointment Only</a></li>
+      </ul>
+    </div>
+  </div>
+  <div class="footer-bottom">
+    <div>© 2025 · The de Prenda Collection · All pieces from private collection</div>
+    <div>A family legacy — not an official Rimowa venture</div>
+  </div>
+</footer>
+
+<!-- LIGHTBOX -->
+<div class="lightbox" id="lightbox" onclick="closeLightboxOnBg(event)">
+  <button class="lightbox-close" onclick="closeLightbox()">×</button>
+  <button class="lightbox-nav prev" onclick="lightboxNav(-1)">&#8249;</button>
+  <img id="lightboxImg" src="" alt="">
+  <button class="lightbox-nav next" onclick="lightboxNav(1)">&#8250;</button>
+</div>
+
+<script>
+const PIECES = {
+  '001': {
+    series: 'Limbo Series · No. 001',
+    name: 'Black &amp; Red Limited Edition',
+    era: 'Two-tone Polycarbonate · 4-wheel Multiwheel®',
+    tag: 'Rare',
+    price: '€ 1,850',
+    desc: 'A striking two-tone composition in matte black polycarbonate with deep cardinal red accents — handle, frame, wheel housings, corner guards, and zipper all in matching crimson. The gold Rimowa badge and matching red leather luggage tag elevate this piece beyond mere luggage. In exceptional, near-mint condition directly from the former owner\'s personal collection.',
+    specs: [
+      ['Series', 'Rimowa Limbo'],
+      ['Colorway', 'Matte Black / Cardinal Red'],
+      ['Wheels', '4-wheel Multiwheel®'],
+      ['Lock', 'TSA-approved Combination Lock'],
+      ['Interior', 'Grey lining, cross-straps, mesh divider'],
+      ['Condition', 'Near Mint'],
+      ['Provenance', 'Former owner\'s personal collection, Château de Prenda'],
+    ],
+    images: ['img_6373.jpeg','img_6380.jpeg','img_6385.jpeg','img_6389.jpeg','img_6394.jpeg','img_6403.jpeg','img_6414.jpeg','img_6424.jpeg'],
+  },
+  '002': {
+    series: 'Topas Classic · No. 002',
+    name: 'Vintage Aluminium Attaché',
+    era: 'Pre-Topas Era · Flat Briefcase Format',
+    tag: 'Available',
+    price: '€ 1,200',
+    desc: 'An exceptionally preserved example of the pre-Topas flat aluminium attaché. The ribbed shell retains its original silver lustre, the dual key locks function perfectly, and the iconic oval RIMOWA badge remains firmly centred. Inside, the original checkered blue fabric lining is intact and undamaged — a testament to decades of careful storage at Château de Prenda.',
+    specs: [
+      ['Series', 'Rimowa Classic Aluminium'],
+      ['Format', 'Flat Attaché / Briefcase'],
+      ['Locks', 'Dual Key Locks + Centre Clasp'],
+      ['Interior', 'Original checkered blue fabric lining'],
+      ['Condition', 'Very Good — honest patina'],
+      ['Provenance', 'Former owner\'s personal collection, Château de Prenda'],
+    ],
+    images: ['img_6968.jpeg','img_7011.jpeg'],
+  },
+  '003': {
+    series: 'Special Edition · No. 003',
+    name: 'Vulcanised Wardrobe Trunk',
+    era: 'Early 20th Century · Wardrobe Format',
+    tag: 'Rare',
+    price: '€ 2,400',
+    desc: 'An extraordinary survival from the golden age of travel. This tall upright wardrobe trunk is constructed from vulcanised canvas stretched over a rigid frame, bound in full cognac leather with hundreds of hand-set brass rivets. The four aged brass corner guards show a lifetime of elegant use. A museum-worthy centrepiece from the very beginning of Rimowa\'s history.',
+    specs: [
+      ['Type', 'Upright Wardrobe Trunk'],
+      ['Exterior', 'Vulcanised canvas, cognac leather binding'],
+      ['Hardware', 'Brass rivets, antique brass corner guards'],
+      ['Closure', 'Dual brass clasps + centre latch'],
+      ['Condition', 'Good — authentic age patina throughout'],
+      ['Provenance', 'Former owner\'s personal collection, Château de Prenda'],
+    ],
+    images: ['img_5960.jpeg','img_6057.jpeg'],
+  },
+  '004': {
+    series: 'Topas Classic · No. 004',
+    name: 'Large Vintage Aluminium',
+    era: 'Pre-Topas Era · Large Check-In',
+    tag: 'Available',
+    price: '€ 980',
+    desc: 'This generous-sized vintage aluminium case is distinguished by its characteristic "droopy" rounded lid profile — a hallmark of pre-Topas Rimowa construction. Three front latches secure the shell, and the original silvered carry handle remains supple. The green fabric interior is surprisingly well-preserved. A sizeable, functional piece of luggage history.',
+    specs: [
+      ['Series', 'Rimowa Classic Aluminium'],
+      ['Size', 'Large Check-In'],
+      ['Latches', 'Triple front latch system'],
+      ['Interior', 'Original green fabric lining'],
+      ['Condition', 'Good — honest vintage wear'],
+      ['Provenance', 'Former owner\'s personal collection, Château de Prenda'],
+    ],
+    images: ['img_6924.jpeg','img_6960.jpeg'],
+  },
+  '005': {
+    series: 'Special Edition · No. 005',
+    name: 'Green Canvas Travel Trunk',
+    era: 'Early Travel Era · Oversized Trunk',
+    tag: 'Rare',
+    price: '€ 1,650',
+    desc: 'A commanding oversized travel trunk in deep forest-green textured canvas, edged in black leather banding with hundreds of brass nail-head rivets. The polished brass triple-clasp hardware remains fully functional. The curved lid profile adds a sculptural quality that makes this as striking displayed as it is practical. One of the most visually arresting pieces in the entire collection.',
+    specs: [
+      ['Type', 'Oversized Travel Trunk'],
+      ['Exterior', 'Textured green canvas, black leather edge'],
+      ['Hardware', 'Brass nail-head rivets, triple brass clasps'],
+      ['Condition', 'Good — period-appropriate wear'],
+      ['Provenance', 'Former owner\'s personal collection, Château de Prenda'],
+    ],
+    images: ['img_7038.jpeg','img_7071.jpeg'],
+  },
+  '006': {
+    series: 'Special Edition · No. 006',
+    name: 'Porsche Design Collaboration',
+    era: 'Rimowa × Porsche · Spinner',
+    tag: 'Rare',
+    price: '€ 2,100',
+    desc: 'Two German design icons, one seamless collaboration. This glossy jet-black polycarbonate spinner wears the Porsche Design medallion on its face — a circular chrome badge that instantly signals the partnership. The all-black treatment extends to the wheels, handle, and frame, giving this piece an understated menace. Near-mint condition from the former owner\'s private transport fleet.',
+    specs: [
+      ['Series', 'Rimowa × Porsche Design'],
+      ['Shell', 'Glossy jet-black polycarbonate'],
+      ['Wheels', '2-wheel spinner'],
+      ['Badge', 'Porsche Design chrome medallion'],
+      ['Condition', 'Near Mint'],
+      ['Provenance', 'Former owner\'s personal collection, Château de Prenda'],
+    ],
+    images: ['img_6076.jpeg','img_6120.jpeg'],
+  },
+  '007': {
+    series: 'Special Edition · No. 007',
+    name: 'Porsche Picnic Case',
+    era: 'Rimowa × Porsche · Picnic Collection',
+    tag: 'Rare',
+    price: '€ 3,200',
+    desc: 'From the extraordinarily rare Rimowa × Porsche picnic collection. This compact polished-aluminium case was designed to carry a complete al fresco dining set for two. The exterior is immaculate: mirrored aluminium ribbing, twin chrome clasps with red Porsche-branded inserts, and a solid centre carry handle. The interior remains pristine. An objet de désir for collectors of both brands.',
+    specs: [
+      ['Series', 'Rimowa × Porsche Picnic Collection'],
+      ['Shell', 'Polished aluminium'],
+      ['Clasps', 'Twin chrome clasps with Porsche branding'],
+      ['Handle', 'Solid chrome centre carry handle'],
+      ['Condition', 'Excellent — near mint'],
+      ['Provenance', 'Former owner\'s personal collection, Château de Prenda'],
+    ],
+    images: ['img_6291.jpeg','img_6320.jpeg'],
+  },
+  '008': {
+    series: 'Special Edition · No. 008',
+    name: 'Illuminated Display Case',
+    era: 'Rimowa Boutique Display · Store Artefact',
+    tag: 'Rare',
+    price: '€ 4,500',
+    desc: 'This is not luggage — this is Rimowa mythology. Originally commissioned as a flagship boutique display piece, this oversize aluminium case houses a full internal lighting rig that illuminates the raised RIMOWA wordmark and "Germany Since 1898" inscription in vivid neon blue. The gunmetal shell is a darker tone than any retail product. A unique artefact of Rimowa\'s heritage — the only known example outside of a museum context.',
+    specs: [
+      ['Type', 'Boutique Display / Store Artefact'],
+      ['Shell', 'Gunmetal aluminium (custom tone)'],
+      ['Illumination', 'Built-in neon-blue LED system'],
+      ['Inscription', 'RIMOWA · Germany Since 1898'],
+      ['Condition', 'Very Good — lighting fully functional'],
+      ['Provenance', 'Former owner\'s personal collection, Château de Prenda'],
+    ],
+    images: ['img_5755.jpeg','img_5820.jpeg'],
+  },
+  '009': {
+    series: 'Topas Classic · No. 009',
+    name: 'Small Vintage Aluminium',
+    era: 'Pre-Topas Era · Compact Format',
+    tag: 'Available',
+    price: '€ 850',
+    desc: 'The compact sibling of Piece 004. This small vintage aluminium case carries the same horizontal ribbing, dual side key locks, and original RIMOWA badging as its larger counterpart, but in a cabin-friendly size. The original checkered fabric interior survives in excellent condition, retaining its pattern and softness. A perfect desktop display or carry-on statement piece for the discerning collector.',
+    specs: [
+      ['Series', 'Rimowa Classic Aluminium'],
+      ['Size', 'Compact / Cabin'],
+      ['Locks', 'Dual side key locks'],
+      ['Interior', 'Original checkered fabric lining'],
+      ['Condition', 'Very Good — beautiful patina'],
+      ['Provenance', 'Former owner\'s personal collection, Château de Prenda'],
+    ],
+    images: ['img_6875.jpeg','img_6899.jpeg'],
+  },
+  '010': {
+    series: 'Heritage · No. 010',
+    name: 'World Traveller — Flagship I',
+    era: 'Mid-Century · Globe-Trotting Archive',
+    tag: 'Rare',
+    price: '€ 2,800',
+    desc: 'Every sticker is a passport stamp. This extraordinary vintage aluminium case has accumulated decades of hotel labels, airline tags, and travel stickers from across Asia, the Pacific, and beyond — Bangkok, Hawaii, Hong Kong, Singapore among countless others. The aluminium shell beneath is structurally sound. This piece does not just tell a story; it is the story. Impossible to replicate.',
+    specs: [
+      ['Series', 'Rimowa Classic Aluminium'],
+      ['Coverage', 'Multi-decade hotel &amp; airline sticker archive'],
+      ['Notable Labels', 'Bangkok, Hawaii, Singapore, Hong Kong'],
+      ['Structure', 'Sound — all latches functional'],
+      ['Condition', 'Good — stickers are the patina'],
+      ['Provenance', 'Former owner\'s personal collection, Château de Prenda'],
+    ],
+    images: ['img_6179.jpeg','img_6230.jpeg'],
+  },
+  '011': {
+    series: 'Heritage · No. 011',
+    name: 'World Traveller — Flagship II',
+    era: 'Mid-Century · Globe-Trotting Archive',
+    tag: 'Rare',
+    price: '€ 3,100',
+    desc: 'The larger companion to Flagship I. This substantial vintage aluminium suitcase carries an equally dense archive of hotel and airline stickers — Bar, The Filla, Peninsular Room, Hilton and many more barely legible beneath the layers of a well-travelled life. Uniquely, the vivid royal-blue interior lining survives in extraordinary condition, providing a dramatic counterpoint to the sticker-smothered exterior. Open it and travel back in time.',
+    specs: [
+      ['Series', 'Rimowa Classic Aluminium'],
+      ['Size', 'Large Check-In'],
+      ['Coverage', 'Full exterior sticker archive'],
+      ['Interior', 'Original royal-blue fabric lining — intact'],
+      ['Condition', 'Good — stickers are the patina'],
+      ['Provenance', 'Former owner\'s personal collection, Château de Prenda'],
+    ],
+    images: ['img_6426.jpeg','img_6475.jpeg'],
+  },
+  '012': {
+    series: 'Salsa Series · No. 012',
+    name: 'Salsa Turquoise Cabin',
+    era: 'Salsa Polycarbonate · Cabin Size',
+    tag: 'Available',
+    price: '€ 680',
+    desc: 'The Salsa line in its most joyful colourway. This cabin-sized case in deep teal polycarbonate is defined by its silver metal corner guards, chrome hinges, and the vintage oval RIMOWA badge — details that mark it as a sought-after earlier production run. The colour is vivid and undimmed; the shell is free of cracks or deep scratches. A rare find in this colourway, in this condition.',
+    specs: [
+      ['Series', 'Rimowa Salsa'],
+      ['Shell', 'Teal polycarbonate'],
+      ['Hardware', 'Silver metal corner guards, chrome hinges'],
+      ['Badge', 'Vintage oval RIMOWA badge'],
+      ['Size', 'Cabin / Carry-On'],
+      ['Condition', 'Very Good'],
+      ['Provenance', 'Former owner\'s personal collection, Château de Prenda'],
+    ],
+    images: ['img_5517.jpeg','img_5557.jpeg'],
+  },
+  '013': {
+    series: 'Salsa Series · No. 013',
+    name: 'Salsa Turquoise Check-In',
+    era: 'Salsa Polycarbonate · Check-In Size',
+    tag: 'Available',
+    price: '€ 920',
+    desc: 'The full-size complement to Piece 012. This larger check-in Salsa shares the same striking teal polycarbonate construction, silver corner protectors, chrome double-latch hardware and vintage RIMOWA badge. Where its cabin companion is neat, this is commanding. The bold colour makes it instantly identifiable on any baggage carousel — though one suspects this case has rarely needed to wait for one.',
+    specs: [
+      ['Series', 'Rimowa Salsa'],
+      ['Shell', 'Teal polycarbonate'],
+      ['Hardware', 'Silver corner guards, chrome double latches'],
+      ['Badge', 'Vintage RIMOWA badge — pristine'],
+      ['Size', 'Full Check-In'],
+      ['Condition', 'Very Good'],
+      ['Provenance', 'Former owner\'s personal collection, Château de Prenda'],
+    ],
+    images: ['img_5663.jpeg','img_5724.jpeg'],
+  },
+};
+
+let currentImages = [];
+let currentIndex = 0;
+
+function setMain(src, idx) {
+  document.getElementById('mainImg').src = src;
+  currentIndex = idx;
+  document.querySelectorAll('.thumb').forEach((t, i) => {
+    t.classList.toggle('active', i === idx);
+  });
+}
+
+function openLightbox(idx) {
+  currentIndex = idx;
+  document.getElementById('lightboxImg').src = currentImages[idx];
+  document.getElementById('lightbox').classList.add('open');
+  document.body.style.overflow = 'hidden';
+}
+
+function closeLightbox() {
+  document.getElementById('lightbox').classList.remove('open');
+  document.body.style.overflow = '';
+}
+
+function closeLightboxOnBg(e) {
+  if (e.target === document.getElementById('lightbox')) closeLightbox();
+}
+
+function lightboxNav(dir) {
+  currentIndex = (currentIndex + dir + currentImages.length) % currentImages.length;
+  document.getElementById('lightboxImg').src = currentImages[currentIndex];
+  setMain(currentImages[currentIndex], currentIndex);
+}
+
+document.addEventListener('keydown', e => {
+  const lb = document.getElementById('lightbox');
+  if (lb.classList.contains('open')) {
+    if (e.key === 'Escape') closeLightbox();
+    if (e.key === 'ArrowLeft') lightboxNav(-1);
+    if (e.key === 'ArrowRight') lightboxNav(1);
+  }
+});
+
+function renderPiece(id) {
+  const p = PIECES[id];
+  if (!p) {
+    document.querySelector('.piece-wrap').innerHTML = '<div style="padding:80px;text-align:center;font-size:14px;color:var(--grey);">Piece not found. <a href="collection.html" style="color:var(--red);">Return to collection →</a></div>';
+    return;
+  }
+
+  document.title = p.name.replace(/&amp;/g, '&') + ' — de Prenda Collection';
+  document.getElementById('breadcrumbName').textContent = 'Piece No. ' + id;
+  document.getElementById('pieceSeries').textContent = p.series;
+  document.getElementById('pieceName').innerHTML = p.name;
+  document.getElementById('pieceEra').textContent = p.era;
+  document.getElementById('pieceDesc').textContent = p.desc;
+  document.getElementById('piecePrice').textContent = p.price;
+
+  const tagEl = document.getElementById('pieceTag');
+  tagEl.textContent = p.tag;
+  tagEl.className = 'piece-tag ' + (p.tag === 'Rare' ? 'tag-rare' : 'tag-available');
+
+  document.getElementById('enquireBtn').href = 'contact.html?piece=' + id;
+
+  // Build spec table
+  const specHtml = p.specs.map(([k, v]) =>
+    `<div class="spec-row"><span class="spec-key">${k}</span><span class="spec-val">${v}</span></div>`
+  ).join('');
+  document.getElementById('specTable').innerHTML = specHtml;
+
+  // Build gallery
+  currentImages = p.images;
+  const mainImg = document.getElementById('mainImg');
+  mainImg.src = p.images[0];
+  mainImg.alt = p.name.replace(/&amp;/g, '&');
+
+  const thumbRow = document.getElementById('thumbRow');
+  thumbRow.innerHTML = p.images.map((src, i) =>
+    `<img class="thumb${i === 0 ? ' active' : ''}" src="${src}" alt="" onclick="setMain('${src}', ${i})">`
+  ).join('');
+
+  // Build other pieces (up to 4, excluding current)
+  const others = Object.entries(PIECES)
+    .filter(([k]) => k !== id)
+    .slice(0, 4);
+  const otherHtml = others.map(([k, op]) =>
+    `<a class="other-card" href="piece.html?id=${k}">
+      <img src="${op.images[0]}" alt="${op.name.replace(/&amp;/g, '&')}">
+      <div class="other-overlay">
+        <div class="other-num">${op.series}</div>
+        <div class="other-name">${op.name}</div>
+        <div class="other-price">${op.price}</div>
+      </div>
+    </a>`
+  ).join('');
+  document.getElementById('otherGrid').innerHTML = otherHtml;
+}
+
+const id = new URLSearchParams(location.search).get('id') || '001';
+renderPiece(id.padStart(3, '0'));
+</script>
+</body>
+</html>
